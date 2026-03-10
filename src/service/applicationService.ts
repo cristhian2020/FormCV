@@ -1,4 +1,11 @@
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  getDocs,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "./firebase";
 
@@ -102,7 +109,6 @@ class ApplicationService {
         userAgent: navigator.userAgent,
         timestamp: new Date().toISOString(),
       };
-      delete applicationData.consentToDataProcessing;
       const docRef = await addDoc(
         collection(db, this.collectionName),
         applicationData,
@@ -115,6 +121,29 @@ class ApplicationService {
     } catch (error) {
       console.error("Error saving application:", error);
       throw new Error("Failed to submit application");
+    }
+  }
+
+  async getApplications() {
+    try {
+      const q = query(
+        collection(db, this.collectionName),
+        orderBy("submittedAt", "desc"),
+      );
+      const querySnapshot = await getDocs(q);
+      const applications: Record<string, any>[] = [];
+
+      querySnapshot.forEach((doc) => {
+        applications.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+
+      return applications;
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      throw new Error("Failed to fetch applications");
     }
   }
 

@@ -1,11 +1,7 @@
-import ApplicationForm from "./components/forms/AplicationForm";
+import { AppRouter } from "./router/AppRouter";
 
 function App() {
-  return (
-    <div className="min-h-screen bg-white w-full">
-     <ApplicationForm />
-    </div>
-  );
+  return <AppRouter />;
 }
 
 export default App;

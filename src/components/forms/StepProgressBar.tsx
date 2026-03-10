@@ -18,16 +18,16 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
                   step === currentStep
                     ? "bg-blue-600 text-white shadow-md ring-2 ring-blue-200"
                     : step < currentStep
-                      ? "bg-blue-600 text-white"
+                      ? "bg-gray-300 text-gray-600"
                       : "bg-gray-200 text-gray-500"
                 }`}
             >
-              {step < currentStep ? "✓" : step}
+              {step < currentStep ? step : step}
             </div>
             {index < steps.length - 1 && (
               <div
                 className={`w-8 sm:w-12 md:w-16 h-0.5 mx-1 transition-colors ${
-                  step < currentStep ? "bg-blue-600" : "bg-gray-200"
+                  step < currentStep ? "bg-gray-300" : "bg-gray-300"
                 }`}
               />
             )}

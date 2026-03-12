@@ -34,7 +34,7 @@ export default function DailyHoursTable({
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="bg-gray-200">
-              {["DAY", "Date", "Start", "End", "Hours", "Bill Hrs", "Remarks"].map((h) => (
+              {["DAY", "Date", "Start Time", "End Time", "Hours", "Bill Hrs", "Remarks"].map((h) => (
                 <th key={h} className="border border-gray-300 p-2 text-left">
                   {h}
                 </th>
@@ -118,7 +118,7 @@ export default function DailyHoursTable({
                 <input type="number" value={weekData[day].hours || ""} readOnly className={readonlyClass} />
               </div>
               <div>
-                <label className="block text-xs text-gray-500">Start</label>
+                <label className="block text-xs text-gray-500">Start Time</label>
                 <input
                   type="time"
                   value={weekData[day].startTime}
@@ -127,7 +127,7 @@ export default function DailyHoursTable({
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500">End</label>
+                <label className="block text-xs text-gray-500">End Time</label>
                 <input
                   type="time"
                   value={weekData[day].endTime}

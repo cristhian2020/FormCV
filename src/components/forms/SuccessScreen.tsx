@@ -1,10 +1,10 @@
-import React from "react";
+import { type FC } from "react";
 
 interface SuccessScreenProps {
   onReset: () => void;
 }
 
-const SuccessScreen: React.FC<SuccessScreenProps> = ({ onReset }) => {
+const SuccessScreen: FC<SuccessScreenProps> = ({ onReset }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-10 max-w-md w-full text-center border border-gray-200">

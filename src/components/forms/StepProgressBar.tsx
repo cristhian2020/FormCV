@@ -1,10 +1,10 @@
-import React from "react";
+import { type FC } from "react";
 
 interface StepProgressBarProps {
   currentStep: number;
 }
 
-const StepProgressBar: React.FC<StepProgressBarProps> = ({ currentStep }) => {
+const StepProgressBar: FC<StepProgressBarProps> = ({ currentStep }) => {
   const steps = [1, 2, 3, 4, 5];
 
   return (

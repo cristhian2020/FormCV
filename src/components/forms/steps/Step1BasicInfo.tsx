@@ -1,16 +1,16 @@
-import React from "react";
+import { type ChangeEvent, type FocusEvent } from "react";
 
 interface Step1Props {
   formData: Record<string, any>;
   errors: Record<string, string>;
   touched: Record<string, boolean>;
   handleChange: (
-    e: React.ChangeEvent<
+    e: ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >,
   ) => void;
   handleBlur: (
-    e: React.FocusEvent<
+    e: FocusEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >,
   ) => void;

@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export interface DayData {
   date: string;
   startTime: string;
@@ -30,14 +32,22 @@ export const DAYS = [
   "Saturday",
 ] as const;
 
-export const INITIAL_WEEK_DATA: Record<string, DayData> = {
-  Sunday: { date: "", startTime: "", endTime: "", hours: 0, billHours: "", remarks: "" },
-  Monday: { date: "", startTime: "", endTime: "", hours: 0, billHours: "", remarks: "" },
-  Tuesday: { date: "", startTime: "", endTime: "", hours: 0, billHours: "", remarks: "" },
-  Wednesday: { date: "", startTime: "", endTime: "", hours: 0, billHours: "", remarks: "" },
-  Thursday: { date: "", startTime: "", endTime: "", hours: 0, billHours: "", remarks: "" },
-  Friday: { date: "", startTime: "", endTime: "", hours: 0, billHours: "", remarks: "" },
-  Saturday: { date: "", startTime: "", endTime: "", hours: 0, billHours: "", remarks: "" },
-};
+export const INITIAL_WEEK_DATA: Record<string, DayData> = (() => {
+  const weekStart = dayjs().startOf("week");
+
+  return Object.fromEntries(
+    DAYS.map((day, index) => [
+      day,
+      {
+        date: weekStart.add(index, "day").format("YYYY-MM-DD"),
+        startTime: "",
+        endTime: "",
+        hours: 0,
+        billHours: "",
+        remarks: "",
+      },
+    ]),
+  ) as Record<string, DayData>;
+})();
 
 export const LS_KEY = "formsheet_data";

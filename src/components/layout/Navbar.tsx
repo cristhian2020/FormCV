@@ -3,9 +3,11 @@ import { ClipboardList, Users, FileText, Menu, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navLinks = [
-  { to: "/", label: "Submit Application", icon: ClipboardList },
+  // { to: "/", label: "Submit Application", icon: ClipboardList },
+  // { to: "/list", label: "Applications", icon: Users },
+  // { to: "/form-sheet", label: "Form Sheet", icon: FileText },
+  { to: "/", label: "Form Sheet", icon: ClipboardList },
   { to: "/list", label: "Applications", icon: Users },
-  { to: "/form-sheet", label: "Form Sheet", icon: FileText },
 ];
 
 const Navbar: React.FC = () => {

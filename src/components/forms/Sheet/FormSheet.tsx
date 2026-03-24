@@ -13,6 +13,10 @@ const FormSheet = () => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const downloadPDF = async () => {
+    form.setSubmitted(true);
+    const isValid = form.validate();
+    if (!isValid) return;
+
     if (!pdfTemplateRef.current) return;
     setIsGeneratingPDF(true);
 
@@ -23,7 +27,6 @@ const FormSheet = () => {
         backgroundColor: "#ffffff",
         windowWidth: 1200,
         onclone: (clonedDoc) => {
-          // Safety net: strip any oklch values that Tailwind v4 might inject
           clonedDoc.querySelectorAll("style").forEach((style) => {
             if (style.textContent) {
               style.textContent = style.textContent.replace(
@@ -68,11 +71,13 @@ const FormSheet = () => {
           <EmployeeInfoSection
             employeeInfo={form.employeeInfo}
             onChange={form.handleEmployeeChange}
+            errors={form.submitted ? form.validationErrors.employee : undefined}
           />
 
           <ProjectInfoSection
             projectInfo={form.projectInfo}
             onChange={form.handleProjectChange}
+            errors={form.submitted ? form.validationErrors.project : undefined}
           />
 
           <DailyHoursTable
@@ -81,10 +86,17 @@ const FormSheet = () => {
             totalBillHours={form.totalBillHours}
             totalAmount={form.totalAmount}
             rate={form.employeeInfo.rate}
+            saturdayHasData={form.saturdayHasData}
             onDayChange={form.handleWeekDataChange}
+            dayErrors={form.submitted ? form.validationErrors.days : undefined}
           />
 
-          <div className="flex justify-center pt-2 sm:pt-4">
+          <div className="flex flex-col items-center gap-3 pt-2 sm:pt-4">
+            {form.submitted && (Object.keys(form.validationErrors.employee).length > 0 || Object.keys(form.validationErrors.project).length > 0 || Object.keys(form.validationErrors.days).length > 0) && (
+              <p className="text-red-500 text-sm font-medium">
+               Aun hay campos sin llenar
+              </p>
+            )}
             <button
               onClick={downloadPDF}
               disabled={isGeneratingPDF}

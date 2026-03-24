@@ -11,8 +11,6 @@ interface Props {
   totalBillHours: number;
 }
 
-// All styles are inline to avoid Tailwind oklch colors that html2canvas cannot parse.
-
 const S = {
   wrapper: {
     width: 1000,
@@ -172,7 +170,7 @@ const PDFTemplate = forwardRef<HTMLDivElement, Props>(
                       : ""}
                   </td>
                   <td style={S.td}>{weekData[day].hours || ""}</td>
-                  <td style={S.td}>{weekData[day].billHours}</td>
+                  <td style={S.td}>{day === "Saturday" ? weekData[day].billHours : ""}</td>
                   <td style={S.tdLast}>{weekData[day].remarks}</td>
                 </tr>
               );

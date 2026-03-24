@@ -3,6 +3,14 @@ import dayjs from "dayjs";
 import type { DayData, EmployeeInfo, ProjectInfo } from "../components/forms/Sheet/types";
 import { DAYS, INITIAL_WEEK_DATA, LS_KEY } from "../components/forms/Sheet/types";
 
+export interface ValidationErrors {
+  employee: Partial<Record<keyof EmployeeInfo, boolean>>;
+  project: Partial<Record<keyof ProjectInfo, boolean>>;
+  days: Partial<Record<string, { startTime?: boolean; endTime?: boolean }>>;
+}
+
+const EMPTY_ERRORS: ValidationErrors = { employee: {}, project: {}, days: {} };
+
 function loadFromStorage() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -34,7 +42,9 @@ export function useTimesheetForm() {
 
   const [weekData, setWeekData] = useState<Record<string, DayData>>(INITIAL_WEEK_DATA);
 
-  //  localStorage
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>(EMPTY_ERRORS);
+  const [submitted, setSubmitted] = useState(false);
+
   const saveToStorage = useCallback(() => {
     localStorage.setItem(
       LS_KEY,
@@ -46,7 +56,59 @@ export function useTimesheetForm() {
     saveToStorage();
   }, [saveToStorage]);
 
-  // Handlers
+  const validate = useCallback((): boolean => {
+    const errors: ValidationErrors = { employee: {}, project: {}, days: {} };
+    let isValid = true;
+
+    const requiredEmployee: (keyof EmployeeInfo)[] = ["name", "operator", "consultantId", "rate"];
+    for (const field of requiredEmployee) {
+      if (!employeeInfo[field].trim()) {
+        errors.employee[field] = true;
+        isValid = false;
+      }
+    }
+
+    const requiredProject: (keyof ProjectInfo)[] = ["invoice", "projectNumber", "location"];
+    for (const field of requiredProject) {
+      if (!projectInfo[field].trim()) {
+        errors.project[field] = true;
+        isValid = false;
+      }
+    }
+
+    let hasAnyDay = false;
+    for (const day of DAYS) {
+      const d = weekData[day];
+      if (d.startTime || d.endTime) {
+        if (!d.startTime) {
+          errors.days[day] = { ...errors.days[day], startTime: true };
+          isValid = false;
+        }
+        if (!d.endTime) {
+          errors.days[day] = { ...errors.days[day], endTime: true };
+          isValid = false;
+        }
+        if (d.startTime && d.endTime) hasAnyDay = true;
+      }
+    }
+
+    if (!hasAnyDay) {
+      for (const day of DAYS) {
+        if (day !== "Sunday" && day !== "Saturday") {
+          errors.days[day] = { startTime: true, endTime: true };
+        }
+      }
+      isValid = false;
+    }
+
+    setValidationErrors(errors);
+    return isValid;
+  }, [employeeInfo, projectInfo, weekData]);
+
+  useEffect(() => {
+    if (submitted) validate();
+  }, [submitted, validate]);
+
   const handleEmployeeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEmployeeInfo((prev) => ({ ...prev, [name]: value }));
@@ -55,12 +117,17 @@ export function useTimesheetForm() {
       setWeekData((prev) => {
         const updated = { ...prev };
         for (const day of DAYS) {
-          updated[day] = {
-            ...prev[day],
-            billHours: rate
-              ? String(Math.round(prev[day].hours * rate * 100) / 100)
-              : "",
-          };
+          if (day === "Saturday") {
+            const totalHrs = Object.values(prev).reduce(
+              (sum, d) => sum + (Number(d.hours) || 0), 0
+            );
+            updated[day] = {
+              ...prev[day],
+              billHours: rate ? String(Math.round(totalHrs * rate * 100) / 100) : "",
+            };
+          } else {
+            updated[day] = { ...prev[day], billHours: "" };
+          }
         }
         return updated;
       });
@@ -78,22 +145,35 @@ export function useTimesheetForm() {
       if (field === "startTime" || field === "endTime") {
         updated.hours = calculateHours(updated.startTime, updated.endTime);
       }
+
+      const newWeek = { ...prev, [day]: updated };
+
       const rate = Number(employeeInfo.rate) || 0;
-      updated.billHours = rate
-        ? String(Math.round(updated.hours * rate * 100) / 100)
-        : "";
-      return { ...prev, [day]: updated };
+      const totalHrs = Object.values(newWeek).reduce(
+        (sum, d) => sum + (Number(d.hours) || 0), 0
+      );
+      newWeek["Saturday"] = {
+        ...newWeek["Saturday"],
+        billHours: rate ? String(Math.round(totalHrs * rate * 100) / 100) : "",
+      };
+
+      for (const d of DAYS) {
+        if (d !== "Saturday") {
+          newWeek[d] = { ...newWeek[d], billHours: "" };
+        }
+      }
+
+      return newWeek;
     });
   };
 
-  // Computed values
   const totalHours = useMemo(
     () => Object.values(weekData).reduce((sum, d) => sum + (Number(d.hours) || 0), 0),
     [weekData],
   );
 
   const totalBillHours = useMemo(
-    () => Object.values(weekData).reduce((sum, d) => sum + (Number(d.billHours) || 0), 0),
+    () => Number(weekData["Saturday"]?.billHours) || 0,
     [weekData],
   );
 
@@ -102,6 +182,11 @@ export function useTimesheetForm() {
     return Math.round(totalHours * rate * 100) / 100;
   }, [totalHours, employeeInfo.rate]);
 
+  const saturdayHasData = useMemo(() => {
+    const sat = weekData["Saturday"];
+    return !!(sat.startTime && sat.endTime);
+  }, [weekData]);
+
   return {
     employeeInfo,
     projectInfo,
@@ -109,6 +194,11 @@ export function useTimesheetForm() {
     totalHours,
     totalBillHours,
     totalAmount,
+    validationErrors,
+    submitted,
+    saturdayHasData,
+    setSubmitted,
+    validate,
     handleEmployeeChange,
     handleProjectChange,
     handleWeekDataChange,

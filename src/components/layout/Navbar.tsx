@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ClipboardList, Users, Menu, X, FileText } from "lucide-react";
+import { ClipboardList, Users, Menu, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navLinks = [

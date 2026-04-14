@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { ClipboardList, Users, Menu, X } from "lucide-react";
+import { ClipboardList, Users, Menu, X, FileText } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navLinks = [
-  // { to: "/", label: "Submit Application", icon: ClipboardList },
-  // { to: "/list", label: "Applications", icon: Users },
+  { to: "/", label: "Application Form", icon: ClipboardList },
   // { to: "/form-sheet", label: "Form Sheet", icon: FileText },
-  { to: "/", label: "Form Sheet", icon: ClipboardList },
+  // { to: "/", label: "Form Sheet", icon: ClipboardList }
   { to: "/list", label: "Applications", icon: Users },
 ];
 

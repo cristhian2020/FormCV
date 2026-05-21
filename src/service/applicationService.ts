@@ -124,20 +124,70 @@ class ApplicationService {
     }
   }
 
+  private mapFirebaseDataToComponent(data: any): any {
+    return {
+      id: data.id,
+      // Personal Information
+      fullName: data.fullName,
+      email: data.email,
+      phoneNumber: data.phone || data.phoneNumber,
+      
+      // Professional Information
+      currentJobTitle: data.jobTitle || data.currentJobTitle,
+      yearsOfExperience: data.yearsExperience || data.yearsOfExperience,
+      mainIndustry: data.industries || data.mainIndustry,
+      professionalSummary: data.summary || data.professionalSummary,
+      desiredPosition: data.desiredPosition,
+      
+      // Education
+      highestEducation: data.educationLevel || data.highestEducation,
+      relevantCertifications: data.certifications || data.relevantCertifications,
+      
+      // Skills
+      keySkills: {
+        technicalCompetencies: data.technicalCompetencies || data.keySkills?.technicalCompetencies,
+        languages: data.languages || data.keySkills?.languages || [],
+      },
+      
+      // Work Preferences
+      workArrangement: data.workArrangement,
+      availability: data.availability,
+      salaryExpectations: data.salary || data.salaryExpectations,
+      willingnessToRelocate: data.relocate !== undefined ? data.relocate : data.willingnessToRelocate,
+      consentToDataProcessing: data.agreement !== undefined ? data.agreement : data.consentToDataProcessing,
+      
+      // Location
+      city: data.city,
+      state: data.state,
+      countryOfResidence: data.country || data.countryOfResidence,
+      
+      // Resume and Links
+      resume: data.resumeURL || data.resume,
+      resumeFileName: data.resume || data.resumeFileName,
+      linkedinProfile: data.linkedin || data.linkedinProfile,
+      coverLetterText: data.coverLetter || data.coverLetterText,
+      
+      // Timestamps and Status
+      submittedAt: data.createdAt || data.submittedAt,
+      status: data.status || "pending",
+    };
+  }
+
   async getApplications() {
     try {
       const q = query(
         collection(db, this.collectionName),
-        orderBy("submittedAt", "desc"),
+        orderBy("createdAt", "desc"),
       );
       const querySnapshot = await getDocs(q);
       const applications: Record<string, any>[] = [];
 
       querySnapshot.forEach((doc) => {
-        applications.push({
+        const mappedData = this.mapFirebaseDataToComponent({
           id: doc.id,
           ...doc.data(),
         });
+        applications.push(mappedData);
       });
 
       return applications;

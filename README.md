@@ -43,6 +43,15 @@ export default defineConfig([
 ])
 ```
 
+## Admin access
+
+To let only certain users open the Applications screen, define one of these environment variables in your `.env` file:
+
+- `VITE_ADMIN_EMAIL=admin@your-domain.com`
+- `VITE_ADMIN_EMAILS=admin1@your-domain.com,admin2@your-domain.com`
+
+Any Google account whose email matches one of those values will be treated as `admin` after sign-in. Everyone else can still view and submit the public form.
+
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js

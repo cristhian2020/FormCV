@@ -7,8 +7,11 @@ import Step5Attachments from "./steps/Step5Attachments";
 import SuccessScreen from "./SuccessScreen";
 import StepProgressBar from "./StepProgressBar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const ApplicationForm = () => {
+  const { user } = useAuth();
   const {
     currentStep,
     formData,
@@ -89,14 +92,25 @@ const ApplicationForm = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-6 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 underline-offset-4 decoration-2">
-            Apply Now
-          </h1>
-          <p className="text-sm sm:text-base text-gray-500 px-4 sm:px-0">
-            Ready to join our team? Submit your application and we'll get back
-            to you soon.
-          </p>
+        <div className="mb-6 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between text-center sm:text-left">
+          <div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 underline-offset-4 decoration-2">
+              Apply Now
+            </h1>
+            <p className="text-sm sm:text-base text-gray-500 px-4 sm:px-0 sm:pl-0">
+              Ready to join our team? Submit your application and we'll get back
+              to you soon.
+            </p>
+          </div>
+
+          {!user && (
+            <Link
+              to="/login"
+              className="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+            >
+              Login
+            </Link>
+          )}
         </div>
 
         <StepProgressBar currentStep={currentStep} />
